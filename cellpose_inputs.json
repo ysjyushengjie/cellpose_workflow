@@ -1,0 +1,23 @@
+{
+  "cellpose_workflow.input_tif": "/Files/ouyangkang/00_ascites/01_HE_image/Y00723M3_HE_aligned_OYK.tif",
+  
+  "cellpose_workflow.input_gem": "/Files/ResultData/Workflow/W202501220008952/04.tissuecut/Y00723M3.gem.gz", 
+  
+  "cellpose_workflow.chip_id": "Y00722CC",
+
+  "cellpose_workflow.model_path": "/data/work/ascites/model/models/cyto3",
+
+  "cellpose_workflow.docker_image": "public-library/ouyangkang_5cb0bf03d0004f299da5ed83dc847ad4_public:latest",
+
+  "cellpose_workflow.scripts_dir": "/path/to/project/scripts",
+  
+  "cellpose_workflow.html_template": "/path/to/report_template.md",
+
+  "cellpose_workflow.memory_gb": 320,
+  
+  "cellpose_workflow.cpu_count": 88,
+  
+  "cellpose_workflow.gpu_count": 1,
+  
+  "cellpose_workflow.gpu_type": "L4"
+} 

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>病理诊断模型报告</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            background-color: #f8f8f8;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            box-sizing: border-box;
+        }
+        .logo {
+            max-width: 200px;
+        }
+        .container {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .section {
+            margin-bottom: 20px;
+            display: flex; /* 使子元素排列在同一行 */
+            flex-wrap: wrap; /* 当容器不足以容纳所有元素时，允许换行 */
+            justify-content: space-between; /* 子元素之间的间隔均匀分布 */
+        }
+        .section h2 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            width: 100%;
+            text-align: center;
+        }
+        .chart, .info-table {
+            flex: 1; /* 允许容器占据可用空间 */
+            min-width: 45%; /* 设置最小宽度，防止容器过窄 */
+            margin: 10px; /* 容器之间的间隔 */
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .info-table th, .info-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center; /* 设置文本居中 */
+        }
+        .info-table th {
+            background-color: #f2f2f2;
+        }
+        .chart img, .image img {
+            max-width: 100%;
+            height: auto;
+        }
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .charts-container img {
+            margin-bottom: 10px;
+            flex: 1 1 calc(25% - 10px); /* 每个图片占据25%的宽度，减去间隔 */
+            max-width: calc(25% - 10px); /* 设置图片最大宽度 */
+            box-sizing: border-box;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 45%;
+        }
+        .button-container button {
+            margin: 5px;
+        }
+        .image-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45%;
+        }
+        .image-container .image {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>病理诊断模型报告</h1>
+    <img src="./img/BGI_logo.jpg" alt="BGI Logo" class="logo">
+</header>
+
+<div class="container">
+    <div class="section">
+        <h2>病人信息</h2>
+        <table class="info-table">
+            <tr>
+                <th>病人姓名</th>
+                <td id="patientName">Loading...</td>
+                <th>实验类型</th>
+                <td>芯片单细胞</td>
+            </tr>
+            <tr>
+                <th>病理号</th>
+                <td id="patientId">Loading...</td>
+                <th>样本类型</th>
+                <td>腹腔积液</td>
+            </tr>
+            <tr>
+                <th>送检日期</th>
+                <td id="sampleDate">Loading...</td>
+                <th>报告日期</th>
+                <td id="reportDate">Loading...</td>
+            </tr>
+            <tr>
+                <th>临床病理诊断</th>
+                <td colspan="3" id="clinicalDiagnosis">Loading...</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>实验信息</h2>
+        <div class="chart">
+            <img src="./img/gem_visualization.png" alt="实验信息图">
+        </div>
+        <div class="chart">
+            <p><strong>细胞分割方法：cellpose V3 模型</strong></p>
+            <table class="info-table">
+                <tr>
+                    <th colspan="2">质控前</th>
+                    <th colspan="2">质控后</th>
+                </tr>
+                <tr>
+                    <td>细胞数</td>
+                    <td id="pre-cell-count">Loading...</td>
+                    <td>细胞数</td>
+                    <td id="post-cell-count">Loading...</td>
+                </tr>
+                <tr>
+                    <td>中位基因数</td>
+                    <td id="pre-median-genes">Loading...</td>
+                    <td>中位基因数</td>
+                    <td id="post-median-genes">Loading...</td>
+                </tr>
+                <tr>
+                    <td>UMI均值</td>
+                    <td id="pre-umi">Loading...</td>
+                    <td>UMI均值</td>
+                    <td id="post-umi">Loading...</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>结果展示</h2>
+        <div class="charts-container">
+            <!-- 动态加载的图片 -->
+            <p>结果将在后续版本添加</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>交互式结果展示</h2>
+        <div class="button-container">
+            <button>细胞类型</button>
+            <button>指定基因</button>
+        </div>
+        <div class="image-container">
+            <p>交互式展示将在后续版本添加</p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchPatientInfo();
+        fetchExperimentalData();
+    });
+
+    function fetchPatientInfo() {
+        // 从JSON文件加载数据，而不是API调用
+        fetch('./data/patient_info.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('无法加载患者信息');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('patientName').textContent = data.patientName;
+                document.getElementById('patientId').textContent = data.patientId;
+                document.getElementById('sampleDate').textContent = data.sampleDate;
+                document.getElementById('reportDate').textContent = data.reportDate;
+                document.getElementById('clinicalDiagnosis').textContent = data.clinicalDiagnosis;
+            })
+            .catch(error => {
+                console.error('加载患者信息出错:', error);
+                // 显示默认值
+                document.getElementById('patientName').textContent = '示例患者';
+                document.getElementById('patientId').textContent = '示例病理号';
+                document.getElementById('sampleDate').textContent = new Date().toISOString().slice(0, 10);
+                document.getElementById('reportDate').textContent = new Date().toISOString().slice(0, 10);
+                document.getElementById('clinicalDiagnosis').textContent = '待诊断';
+            });
+    }
+
+    function fetchExperimentalData() {
+        // 从JSON文件加载数据，而不是API调用
+        fetch('./data/experimental_data.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('无法加载实验数据');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('pre-cell-count').textContent = data.preProcess.cellCount;
+                document.getElementById('post-cell-count').textContent = data.postProcess.cellCount;
+                document.getElementById('pre-median-genes').textContent = data.preProcess.medianGenes;
+                document.getElementById('post-median-genes').textContent = data.postProcess.medianGenes;
+                document.getElementById('pre-umi').textContent = data.preProcess.umi;
+                document.getElementById('post-umi').textContent = data.postProcess.umi;
+            })
+            .catch(error => {
+                console.error('加载实验数据出错:', error);
+                // 显示默认值
+                document.getElementById('pre-cell-count').textContent = 'N/A';
+                document.getElementById('post-cell-count').textContent = 'N/A';
+                document.getElementById('pre-median-genes').textContent = 'N/A';
+                document.getElementById('post-median-genes').textContent = 'N/A';
+                document.getElementById('pre-umi').textContent = 'N/A';
+                document.getElementById('post-umi').textContent = 'N/A';
+            });
+    }
+</script>
+
+</body>
+</html>
