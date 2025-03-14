@@ -31,7 +31,7 @@ workflow cellpose_workflow {
         input:
             input_gem = input_gem,
             chip_id = chip_id,
-            docker_image = docker_image,
+            docker_image = 'stereonote_hpc/huangbaoqian_a1b74b22842c4fdf8daac78a4775196c_public:latest',
             scripts_dir = scripts_dir,
             memory_gb = memory_gb,
             cpu_count = cpu_count,

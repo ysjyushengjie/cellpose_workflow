@@ -9,8 +9,8 @@
 @Update : 2025.03.03
 ======================================================
 
-update record：
-- 2025.03.03：todense() is changed to toarray() to avoid memory overflow during large-scale data conversion.
+update record:
+- 2025.03.03:todense() is changed to toarray() to avoid memory overflow during large-scale data conversion.
 """
 
 

@@ -1,0 +1,83 @@
+# 数据文件
+*.tif
+*.tiff
+*.gem
+*.gem.gz
+*.h5ad
+*.gef
+*.png
+*.jpg
+*.jpeg
+data/
+
+# 结果文件
+results/
+report.html
+output/
+*_output/
+
+# Python相关
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 临时文件
+temp/
+tmp/
+*.log
+*.swp
+*.swo
+.DS_Store
+
+# IDE相关
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Cromwell工作流相关
+cromwell-*
+*.stderr
+*.stdout
+.cromwell
+cromwell-executions/
+cromwell-workflow-logs/
+execution/
+
+# 大型测试数据目录
+test_data/
+
+# 备份文件
+*~
+*.bak
+*.backup
+
+# 环境相关
+.env
+.venv
+venv/
+ENV/
+
+# Docker相关
+.docker/
+
+# 日志文件
+logs/ 

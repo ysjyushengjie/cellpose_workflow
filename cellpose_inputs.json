@@ -11,7 +11,7 @@
 
   "cellpose_workflow.scripts_dir": "/path/to/project/scripts",
   
-  "cellpose_workflow.html_template": "/path/to/report_template.md",
+  "cellpose_workflow.html_template": "/path/to/project/scripts/index.html",
 
   "cellpose_workflow.memory_gb": 320,
   

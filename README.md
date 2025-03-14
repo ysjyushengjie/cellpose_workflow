@@ -14,7 +14,9 @@
     ├── 02_based_cellpose_segment_cell.py       # 细胞分割脚本
     ├── 03_cell_correct_and_generate_matrix.py  # 矩阵生成脚本
     ├── 04_generate_report.py                   # 报告生成脚本
-    └── report_template.md                      # 报告Markdown模板
+    ├── index.html                              # HTML报告模板
+    └──img/
+        └── BGI_logo.jpg                            # BGI logo图片
 ```
 
 ## 功能简介
@@ -23,10 +25,11 @@
 1. GEM 文件转换为 TIFF 图像
 2. 使用 Cellpose 模型进行细胞分割
 3. 生成单细胞矩阵
-4. 生成网页可视化报告（基于Markdown模板自动生成HTML）
+4. 生成网页可视化报告（基于HTML模板）
 
 ## 输入参数说明
 
+### 数据参数
 ```
 input_tif: 输入的 TIF 图像文件
 input_gem: 输入的 GEM 文件
@@ -34,7 +37,15 @@ chip_id: 芯片 ID
 model_path: Cellpose 模型路径
 docker_image: Docker 镜像
 scripts_dir: 脚本目录路径
-html_template:  Markdown报告模板路径
+html_template: HTML报告模板路径
+```
+
+### 计算资源参数
+```
+memory_gb: 内存大小(GB)，默认16
+cpu_count: CPU核心数，默认4
+gpu_count: GPU数量，默认1
+gpu_type: GPU类型，默认L4
 ```
 
 ## 输出文件
@@ -45,14 +56,15 @@ html_template:  Markdown报告模板路径
 - `{chip_id}_cellpose_cp_masks.png`: 细胞分割掩码
 - `{chip_id}_cellpose.h5ad`: 单细胞矩阵（H5AD格式）
 - `{chip_id}.adjusted.cellbin.gef`: 细胞 bin GEF 文件
-- `report.html`: 实验报告网页（从Markdown模板生成）
+- `report.html`: 实验报告网页
 
 ## 报告生成说明
 
-该工作流使用Markdown模板生成HTML报告，而不是直接使用HTML模板。这种方法的优点是:
-1. Markdown格式更易于编辑和维护
-2. 使用Python标准库可以轻松将Markdown转换为HTML
-3. 不需要复杂的JavaScript交互
+该工作流使用HTML模板生成报告，具有以下特点:
+1. 数据与展示分离，实验数据以JSON格式存储
+2. 使用原生JavaScript进行数据加载，无需复杂后端
+3. 报告包含基本实验信息、质控指标和结果展示
+4. 生成的报告支持离线查看，无需网络连接
 
 ## 运行方法
 
@@ -71,9 +83,9 @@ miniwdl run cellpose_workflow.wdl -i cellpose_inputs.json
 ## 系统要求
 
 - Docker
-- 16GB 内存
-- GPU 支持
-- 4 CPU 核心
+- 内存需求：可配置（默认16GB）
+- CPU需求：可配置（默认4核心）
+- GPU需求：可配置（默认1个L4）
 
 ## Docker 环境
 
@@ -81,5 +93,4 @@ miniwdl run cellpose_workflow.wdl -i cellpose_inputs.json
 - Cellpose
 - Stereo-seq 相关工具
 - Scanpy
-- Spateo
-- Python Markdown库（用于MD到HTML转换）
+- Python标准库

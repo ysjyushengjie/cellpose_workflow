@@ -8,8 +8,8 @@
 @Version: v1
 @Update : 2025.03.13
 ======================================================
-update record：
-- 2025.03.13：adding annotation information and modifying error
+update record:
+- 2025.03.13: adding annotation information and modifying error
 """
 
 from cellpose import models, io
