@@ -60,9 +60,18 @@
         .info-table th {
             background-color: #f2f2f2;
         }
-        .chart img, .image img {
+        .chart {
+            flex: 1;
+            margin: 5px; /* 减少外边距 */
+            padding: 0; /* 移除内边距 */
+            min-width: auto; /* 移除最小宽度限制 */
+        }
+        .chart img {
             max-width: 100%;
-            height: auto;
+            height: auto; /* 保留原始比例 */
+            max-height: 250px; /* 进一步降低最大高度限制 */
+            display: block; /* 将图片设置为块级元素 */
+            margin: 0 auto; /* 水平居中 */
         }
         .charts-container {
             display: flex;
@@ -101,7 +110,8 @@
 
 <header>
     <h1>病理诊断模型报告</h1>
-    <img src="./img/BGI_logo.jpg" alt="BGI Logo" class="logo">
+    <!-- 为BGI Logo添加默认占位符 -->
+    <img src="{{LOGO_PATH}}" alt="BGI Logo" class="logo" onerror="this.src='./img/default_logo.png'; this.alt='Default Logo';">
 </header>
 
 <div class="container">
@@ -136,7 +146,8 @@
     <div class="section">
         <h2>实验信息</h2>
         <div class="chart">
-            <img src="./img/gem_visualization.png" alt="实验信息图">
+            <!-- 为GEM图添加默认占位符 -->
+            <img src="{{GEM_IMAGE_PATH}}" alt="实验信息图">
         </div>
         <div class="chart">
             <p><strong>细胞分割方法：cellpose V3 模型</strong></p>
@@ -187,68 +198,34 @@
     </div>
 </div>
 
+<!-- 添加嵌入数据占位符 -->
+<!-- EMBEDDED_DATA_PLACEHOLDER -->
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        fetchPatientInfo();
-        fetchExperimentalData();
+        // 使用嵌入的病人信息数据
+        if (typeof patientInfo !== 'undefined') {
+            document.getElementById('patientName').textContent = patientInfo.patientName;
+            document.getElementById('patientId').textContent = patientInfo.patientId;
+            document.getElementById('sampleDate').textContent = patientInfo.sampleDate;
+            document.getElementById('reportDate').textContent = patientInfo.reportDate;
+            document.getElementById('clinicalDiagnosis').textContent = patientInfo.clinicalDiagnosis;
+        } else {
+            console.error('病人信息未定义');
+        }
+
+        // 使用嵌入的实验信息数据
+        if (typeof experimentalData !== 'undefined') {
+            document.getElementById('pre-cell-count').textContent = experimentalData.preProcess.cellCount;
+            document.getElementById('post-cell-count').textContent = experimentalData.postProcess.cellCount;
+            document.getElementById('pre-median-genes').textContent = experimentalData.preProcess.medianGenes;
+            document.getElementById('post-median-genes').textContent = experimentalData.postProcess.medianGenes;
+            document.getElementById('pre-umi').textContent = experimentalData.preProcess.umi;
+            document.getElementById('post-umi').textContent = experimentalData.postProcess.umi;
+        } else {
+            console.error('实验信息未定义');
+        }
     });
-
-    function fetchPatientInfo() {
-        // 从JSON文件加载数据，而不是API调用
-        fetch('./data/patient_info.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('无法加载患者信息');
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('patientName').textContent = data.patientName;
-                document.getElementById('patientId').textContent = data.patientId;
-                document.getElementById('sampleDate').textContent = data.sampleDate;
-                document.getElementById('reportDate').textContent = data.reportDate;
-                document.getElementById('clinicalDiagnosis').textContent = data.clinicalDiagnosis;
-            })
-            .catch(error => {
-                console.error('加载患者信息出错:', error);
-                // 显示默认值
-                document.getElementById('patientName').textContent = '示例患者';
-                document.getElementById('patientId').textContent = '示例病理号';
-                document.getElementById('sampleDate').textContent = new Date().toISOString().slice(0, 10);
-                document.getElementById('reportDate').textContent = new Date().toISOString().slice(0, 10);
-                document.getElementById('clinicalDiagnosis').textContent = '待诊断';
-            });
-    }
-
-    function fetchExperimentalData() {
-        // 从JSON文件加载数据，而不是API调用
-        fetch('./data/experimental_data.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('无法加载实验数据');
-                }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('pre-cell-count').textContent = data.preProcess.cellCount;
-                document.getElementById('post-cell-count').textContent = data.postProcess.cellCount;
-                document.getElementById('pre-median-genes').textContent = data.preProcess.medianGenes;
-                document.getElementById('post-median-genes').textContent = data.postProcess.medianGenes;
-                document.getElementById('pre-umi').textContent = data.preProcess.umi;
-                document.getElementById('post-umi').textContent = data.postProcess.umi;
-            })
-            .catch(error => {
-                console.error('加载实验数据出错:', error);
-                // 显示默认值
-                document.getElementById('pre-cell-count').textContent = 'N/A';
-                document.getElementById('post-cell-count').textContent = 'N/A';
-                document.getElementById('pre-median-genes').textContent = 'N/A';
-                document.getElementById('post-median-genes').textContent = 'N/A';
-                document.getElementById('pre-umi').textContent = 'N/A';
-                document.getElementById('post-umi').textContent = 'N/A';
-            });
-    }
 </script>
 
 </body>
