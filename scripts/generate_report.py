@@ -1,18 +1,21 @@
 """
 ======================================================
-@File   : 04_generate_report.py
+@File   : generate_report.py
 @Author : yushengjie
 @Date   : 2025.03.13
 @Email  : yushengjie@genomics.cn
-@Desc   : generate html report from h5ad matrix and gem png
+@Desc   : Generate HTML report from h5ad matrix and image files
 @mirror : spateo_scanpy
-@Version: v3.0
-@Update : 2025.03.21
+@Version: v4.0
+@Update : 2025.04.15
 ======================================================
 
 Update record:
-    1. add embedded data to html header
-    2. add logo to html header
+    1. Added cell ratio image to HTML report
+    2. Added distribution image to HTML report
+    3. Added cnv result image to HTML report
+    4. Added log file to record the process
+    5. Added error handling
 """
 
 import scanpy as sc
@@ -35,10 +38,15 @@ def check_file_exists(file_path, file_desc):
     Returns:
         bool: True if the file exists, False otherwise
     """
-    if not os.path.exists(file_path):
-        logging.error(f"error: {file_desc} does not exist")
+    try:
+        if not os.path.exists(file_path):
+            logging.error(f"error: {file_desc} does not exist at {file_path}")
+            return False
+        logging.info(f"{file_desc} found at {file_path}")
+        return True
+    except Exception as e:
+        logging.error(f"error checking file {file_path}: {str(e)}")
         return False
-    return True
 
 def generate_experimental_data(h5ad_matrix):
     """
@@ -50,7 +58,9 @@ def generate_experimental_data(h5ad_matrix):
         dict: experimental data
     """
     try:
+        logging.info(f"Loading h5ad matrix from {h5ad_matrix}")
         adata = sc.read_h5ad(h5ad_matrix)
+        logging.info(f"Successfully loaded h5ad matrix with {adata.n_obs} cells and {adata.n_vars} genes")
         
         # check if the raw data exists
         if adata.raw is not None:
@@ -91,29 +101,41 @@ def generate_experimental_data(h5ad_matrix):
             }
         }
 
-def generate_report(chip_id, h5ad_matrix, gem_png, html_template, logo_path):
+def generate_report(html_template, logo_path, chip_id, h5ad_matrix, gem_png, cell_ratio_image, distribution_image, cnv_result_image):
     """
-    generate html report from h5ad matrix and gem png
+    generate html report from h5ad matrix and image files
 
     Parameters:
+        html_template (str): HTML template file path
+        logo_path (str): Logo file path
+
         chip_id (str): chip id
         h5ad_matrix (str): H5AD matrix file path
         gem_png (str): GEM PNG file path
-        html_template (str): HTML template file path
-        logo_path (str): Logo file path
+
+        cell_ratio_image (str): cell ratio image path
+        distribution_image (str): cell distribution image path
+        cnv_result_image (str): CNV result image path
 
     Return:
         bool: True if report generation is successful, False otherwise
     """
+    logging.info(f"Starting report generation for chip {chip_id}")
+    logging.info(f"Input files: h5ad={h5ad_matrix}, gem={gem_png}, template={html_template}")
 
     # check if the required files exist
     required_files = [
+        (html_template, "HTML template file path"),
+        (logo_path, "BGI logo file path"),
+
         (h5ad_matrix, "H5AD matrix file path"),
         (gem_png, "GEM PNG file path"),
-        (html_template, "HTML template file path"),
-        (logo_path, "BGI logo file path")
+
+        (cell_ratio_image, "cell ratio image path"),
+        (distribution_image, "cell distribution image path"),
+        (cnv_result_image, "CNV result image path"),
     ]
-    
+    logging.info("<==========================loading required files========================>")
     for file_path, desc in required_files:
         if not check_file_exists(file_path, desc):
             return False
@@ -132,20 +154,32 @@ def generate_report(chip_id, h5ad_matrix, gem_png, html_template, logo_path):
     
     # generate html report
     try:
+        logging.info("<======================generating report=======================>")
         with open(html_template, "r", encoding="utf-8") as template_file:
+            if not template_file:
+                logging.error(f"error: HTML template file {html_template} is empty")
+                return False
             html_content = template_file.read()
+            logging.info(f"HTML template loaded successfully from {html_template}")
 
         # generate embedded data
+        logging.info("generating embedded data")
         embedded_patient_info = f"<script id='embedded-patient-info'>const patientInfo = {json.dumps(patient_info, ensure_ascii=False)};</script>"
         embedded_exp_data = f"<script id='embedded-exp-data'>const experimentalData = {json.dumps(exp_data, ensure_ascii=False)};</script>"
 
         # replace placeholders or insert into HTML header
         html_content = html_content.replace("{{LOGO_PATH}}", logo_path)
         html_content = html_content.replace("{{GEM_IMAGE_PATH}}", gem_png)
+        html_content = html_content.replace("{{CELL_RATIO_IMAGE}}", cell_ratio_image)
+        html_content = html_content.replace("{{DISTRIBUTION_IMAGE}}", distribution_image)
+        html_content = html_content.replace("{{CNV_RESULT_IMAGE}}", cnv_result_image)
         html_content = html_content.replace("<!-- EMBEDDED_DATA_PLACEHOLDER -->", 
                                             f"{embedded_patient_info}\n{embedded_exp_data}")
 
         with open("report.html", "w", encoding="utf-8") as output_file:
+            if not output_file:
+                logging.error(f"error: output file {output_file} is empty")
+                return False
             output_file.write(html_content)
 
         logging.info("report generation successful")
@@ -157,32 +191,28 @@ def generate_report(chip_id, h5ad_matrix, gem_png, html_template, logo_path):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--html", required=True, help="HTML")
+    parser.add_argument("--logo", default="img/BGI_logo.jpg", help="LOGO")
+
     parser.add_argument("--chip", required=True, help="chipId")
     parser.add_argument("--h5ad", required=True, help="H5AD")
     parser.add_argument("--gem", required=True, help="PNG")
-    parser.add_argument("--html", required=True, help="HTML")
-    parser.add_argument("--logo", default="img/BGI_logo.jpg", help="LOGO")
+
+    parser.add_argument("--cell_ratio", default="img/cell_ratio.png", help="cell ratio image path")
+    parser.add_argument("--distribution", default="img/distribution.png", help="cell distribution image path")
+    parser.add_argument("--cnv_result", default="img/cnv_result.png", help="CNV result image path")
 
     args = parser.parse_args()
 
     success = generate_report(
+        html_template = args.html,
+        logo_path=args.logo,
+
         chip_id = args.chip,
         h5ad_matrix = args.h5ad,
+
         gem_png = args.gem,
-        html_template = args.html,
-        logo_path=args.logo
+        cell_ratio_image=args.cell_ratio,
+        distribution_image=args.distribution,
+        cnv_result_image=args.cnv_result
     )
-    # args = {
-    #     "chip" : "Y00723M3",
-    #     "h5ad" : "Y00723M3_cellpose_NC.h5ad",
-    #     "gem" : "Y00723M3_bin1_beforePS.png",
-    #     "html" : "index.html",
-    #     "logo" : "img/BGI_logo.jpg"
-    # }
-    # success = generate_report(
-    #     chip_id = args['chip'],  # 改为方括号访问
-    #     h5ad_matrix = args['h5ad'],
-    #     gem_png = args['gem'],
-    #     html_template = args['html'],
-    #     logo_path=args['logo']
-    # )
