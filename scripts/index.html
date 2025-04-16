@@ -5,16 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>病理诊断模型报告</title>
     <style>
+        /* 布局相关样式 - 按逻辑顺序重新组织 */
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+        
+        /* 容器布局 */
+        .container {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
         header {
-            background-color: #f8f8f8;
             width: 100%;
             display: flex;
             justify-content: space-between;
@@ -22,88 +29,241 @@
             padding: 10px 20px;
             box-sizing: border-box;
         }
-        .logo {
-            max-width: 200px;
-        }
-        .container {
-            width: 80%;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+        
         .section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
             margin-bottom: 20px;
-            display: flex; /* 使子元素排列在同一行 */
-            flex-wrap: wrap; /* 当容器不足以容纳所有元素时，允许换行 */
-            justify-content: space-between; /* 子元素之间的间隔均匀分布 */
-        }
-        .section h2 {
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 5px;
             width: 100%;
+        }
+        
+        /* 实验信息区域保持1:2比例 */
+        .experiment-info-container {
+            display: flex;
+            width: 100%;
+        }
+        .chart-experiment-info {
+            flex: 1;
+        }
+        .chart-experiment-details {
+            flex: 2;
             text-align: center;
         }
-        .chart, .info-table {
-            flex: 1; /* 允许容器占据可用空间 */
-            min-width: 45%; /* 设置最小宽度，防止容器过窄 */
-            margin: 10px; /* 容器之间的间隔 */
-        }
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .info-table th, .info-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center; /* 设置文本居中 */
-        }
-        .info-table th {
-            background-color: #f2f2f2;
-        }
-        .chart {
-            flex: 1;
-            margin: 5px; /* 减少外边距 */
-            padding: 0; /* 移除内边距 */
-            min-width: auto; /* 移除最小宽度限制 */
-        }
-        .chart img {
-            max-width: 100%;
-            height: auto; /* 保留原始比例 */
-            max-height: 250px; /* 进一步降低最大高度限制 */
-            display: block; /* 将图片设置为块级元素 */
-            margin: 0 auto; /* 水平居中 */
-        }
+        
+        /* 图表容器 */
         .charts-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             width: 100%;
         }
-        .charts-container img {
-            margin-bottom: 10px;
-            flex: 1 1 calc(25% - 10px); /* 每个图片占据25%的宽度，减去间隔 */
-            max-width: calc(25% - 10px); /* 设置图片最大宽度 */
-            box-sizing: border-box;
+        
+        /* 图片和按钮容器 */
+        .image-container, .button-container {
+            width: 45%;
         }
         .button-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 45%;
-        }
-        .button-container button {
-            margin: 5px;
         }
         .image-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 45%;
+        }
+        
+        /* 搜索区域 */
+        .search-container {
+            width: 100%;
+            margin: 20px 0;
+        }
+        .input-group {
+            width: 100%;
+            gap: 2%;
+        }
+        
+        /* 图片行布局 */
+        .image-row {
+            display: flex;
+            gap: 2%;
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+        /* 图表图片容器 */
+        .chart-image-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* 尺寸和间距相关样式 */
+        .container {
+            width: 80%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .logo {
+            max-width: 200px;
+        }
+        .chart, .info-table {
+            min-width: 45%;
+            margin: 10px;
+        }
+        .chart {
+            flex-direction: column;
+            margin: 5px;
+            padding: 0;
+            min-width: auto;
+        }
+        .info-table {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .charts-container img {
+            margin-bottom: 10px;
+            flex: 1 1 calc(25% - 10px);
+            max-width: calc(25% - 10px);
+            box-sizing: border-box;
+        }
+        .chart-image-container {
+            flex: 1;
+            display: flex;
+            height: 280px;
+            padding: 10px;
+        }
+        .button-container button {
+            margin: 5px;
         }
         .image-container .image {
             margin: 0 10px;
         }
+        .result-card {
+            flex: 0 1 49%;
+            min-width: 400px;
+        }
+
+        /* 边框和背景相关样式 */
+        header {
+            background-color: #f8f8f8;
+        }
+        .section h2 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .info-table {
+            border-collapse: collapse;
+        }
+        .info-table th, .info-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .chart-image-container {
+            background: #f8f8f8;
+            border-radius: 8px;
+        }
+        .result-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* 字体和文本相关样式 */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .section h2 {
+            width: 100%;
+            text-align: center;
+        }
+        .info-table th, .info-table td {
+            text-align: center;
+        }
+        .info-table th {
+            background-color: #f2f2f2;
+        }
+        .chart p {
+            margin: 0;
+            width: 100%;
+            order: 2;
+            font-size: 16px;
+            font-weight: 500;
+            color: #2c3e50;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .search-input {
+            font-size: 16px;
+        }
+
+        /* 图片相关样式 */
+        .chart img {
+            max-width: 100%;
+            height: auto;
+            max-height: 250px;
+            display: block;
+            margin: 0 auto;
+        }
+        .chart-image {
+            max-width: 90%;
+            min-width: 90%;
+            max-height: 90%;
+            min-height: 90%;
+            object-fit: contain;
+        }
+
+        /* 交互效果相关样式 */
+        .chart-image {
+            transition: transform 0.3s;
+        }
+        .chart-image:hover {
+            transform: scale(1.03);
+        }
+        .search-input {
+            transition: all 0.3s;
+        }
+        .search-btn {
+            transition: all 0.3s;
+        }
+        .result-card {
+            transition: transform 0.3s;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* 表单元素相关样式 */
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0,123,255,0.2);
+        }
+        .search-btn {
+            padding: 12px 30px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+        .search-btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+    
     </style>
 </head>
 <body>
@@ -145,55 +305,94 @@
 
     <div class="section">
         <h2>实验信息</h2>
-        <div class="chart">
-            <!-- 为GEM图添加默认占位符 -->
-            <img src="{{GEM_IMAGE_PATH}}" alt="实验信息图">
-        </div>
-        <div class="chart">
-            <p><strong>细胞分割方法：cellpose V3 模型</strong></p>
-            <table class="info-table">
-                <tr>
-                    <th colspan="2">质控前</th>
-                    <th colspan="2">质控后</th>
-                </tr>
-                <tr>
-                    <td>细胞数</td>
-                    <td id="pre-cell-count">Loading...</td>
-                    <td>细胞数</td>
-                    <td id="post-cell-count">Loading...</td>
-                </tr>
-                <tr>
-                    <td>中位基因数</td>
-                    <td id="pre-median-genes">Loading...</td>
-                    <td>中位基因数</td>
-                    <td id="post-median-genes">Loading...</td>
-                </tr>
-                <tr>
-                    <td>UMI均值</td>
-                    <td id="pre-umi">Loading...</td>
-                    <td>UMI均值</td>
-                    <td id="post-umi">Loading...</td>
-                </tr>
-            </table>
+        <div class="experiment-info-container">
+            <div class="chart chart-experiment-info">
+                <!-- 为GEM图添加默认占位符 -->
+                <img src="{{GEM_IMAGE_PATH}}" alt="实验信息图" class="chart-image">
+            </div>
+            <div class="chart chart-experiment-details">
+                <p><strong>细胞分割方法：cellpose V3 模型</strong></p>
+                <table class="info-table">
+                    <tr>
+                        <th colspan="2">质控前</th>
+                        <th colspan="2">质控后</th>
+                    </tr>
+                    <tr>
+                        <td>细胞数</td>
+                        <td id="pre-cell-count">Loading...</td>
+                        <td>细胞数</td>
+                        <td id="post-cell-count">Loading...</td>
+                    </tr>
+                    <tr>
+                        <td>中位基因数</td>
+                        <td id="pre-median-genes">Loading...</td>
+                        <td>中位基因数</td>
+                        <td id="post-median-genes">Loading...</td>
+                    </tr>
+                    <tr>
+                        <td>UMI均值</td>
+                        <td id="pre-umi">Loading...</td>
+                        <td>UMI均值</td>
+                        <td id="post-umi">Loading...</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 
     <div class="section">
         <h2>结果展示</h2>
         <div class="charts-container">
-            <!-- 动态加载的图片 -->
-            <p>结果将在后续版本添加</p>
+            <!-- 细胞比例图 -->
+            <div class="chart chart-image-container">
+                <div class="chart-image-container">
+                    <img src="{{CELL_RATIO_IMAGE}}" alt="细胞比例图" class="chart-image">
+                    <p>细胞比例图</p>
+                </div>
+            </div>
+
+            <!-- 肿瘤细胞分布图 -->
+            <div class="chart chart-image-container">
+                <div class="chart-image-container">
+                    <img src="{{DISTRIBUTION_IMAGE}}" alt="肿瘤细胞分布图" class="chart-image">
+                    <p>肿瘤细胞分布图</p>
+                </div>
+            </div>
+            <!-- CNV推断图 -->
+            <div class="chart chart-image-container">
+                <div class="chart-image-container">
+                    <img src="{{CNV_RESULT_IMAGE}}" alt="CNV推断图" class="chart-image">
+                    <p>CNV推断图</p>
+                </div>
+            </div>
+            <!-- 肿瘤来源推测图（空缺） -->
         </div>
     </div>
 
     <div class="section">
         <h2>交互式结果展示</h2>
-        <div class="button-container">
-            <button>细胞类型</button>
-            <button>指定基因</button>
+        <div class="search-container">
+            <div class="input-group">
+                <input type="text" placeholder="请输入细胞类型" class="search-input">
+                <input type="text" placeholder="请输入基因名称" class="search-input">
+                <button class="search-btn">搜索</button>
+            </div>
         </div>
-        <div class="image-container">
-            <p>交互式展示将在后续版本添加</p>
+        <div class="image-row">
+            <!-- HE图像占位 -->
+            <div class="result-card">
+                <div class="chart-image-container">
+                    <img src="img/he_placeholder.jpg" alt="HE染色图像" class="chart-image">
+                    <p>HE染色图像（示例）</p>
+                </div>
+            </div>
+            <!-- 基因表达信息占位 -->
+            <div class="result-card">
+                <div class="chart-image-container">
+                    <img src="img/gene_expression_placeholder.jpg" alt="基因表达信息" class="chart-image">
+                    <p>基因表达信息（示例）</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
